@@ -1,8 +1,6 @@
-
 let classes = [];
 let currentQRCode = null;
 let currentClass = null;
-
 
 function init() {
   loadClasses();
@@ -166,5 +164,6 @@ window.onclick = function(event) {
 
 
 window.addEventListener('DOMContentLoaded', init);
+
 
 
