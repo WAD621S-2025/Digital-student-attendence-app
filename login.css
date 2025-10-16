@@ -4,9 +4,6 @@ body {
   box-sizing: border-box;
   height: 100%;
   font-family: 'Poppins', sans-serif;
-}
-
-body {
   background: url('https://i.pinimg.com/1200x/7b/8c/fd/7b8cfdd343e320d37c0272ba25f987d7.jpg') no-repeat center center/cover;
   display: flex;
   justify-content: center;
@@ -218,6 +215,7 @@ form button:hover {
     padding: 10px 0;
   }
 }
+
 
 
 
