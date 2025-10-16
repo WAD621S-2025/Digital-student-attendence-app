@@ -10,7 +10,6 @@
   <div class="container">
     <div class="flip-card">
       <div class="flip-card-inner" id="card">
-
         
         <div class="flip-card-front">
           <div class="form-box">
@@ -20,19 +19,19 @@
             <form id="loginForm">
               <select id="loginRole" required>
                 <option value="" disabled selected>Select Role</option>
-                <option value="Lecturer">Lecturer</option>
+                <option value="lecturer">Lecturer</option>
                 <option value="student">Student</option>
               </select>
               <input type="email" id="loginEmail" placeholder="Email" required>
               <input type="password" id="loginPassword" placeholder="Password" required>
+              <div class="error-message" id="loginError"></div>
               <button type="submit">Login</button>
               <p class="link" id="forgotLink">Forgot Password?</p>
-              <p class="link" id="toSignup">Don’t have an account? Sign Up</p>
+              <p class="link" id="toSignup">Don't have an account? Sign Up</p>
             </form>
           </div>
         </div>
 
-        
         <div class="flip-card-back">
           <div class="form-box">
             <img src="https://i.pinimg.com/736x/f9/52/c1/f952c1fb0948072af6e3cd3dedf38249.jpg" 
@@ -41,18 +40,26 @@
             <form id="signupForm">
               <select id="signupRole" required>
                 <option value="" disabled selected>Select Role</option>
-                <option value="Lecturer">Lecturer</option>
+                <option value="lecturer">Lecturer</option>
                 <option value="student">Student</option>
               </select>
               <input type="text" id="signupName" placeholder="Full Name" required>
               <input type="email" id="signupEmail" placeholder="Email" required>
               <input type="password" id="signupPassword" placeholder="Password" required>
+              <div class="error-message" id="signupError"></div>
+              <div class="success-message" id="signupSuccess"></div>
               <button type="submit">Sign Up</button>
               <p class="link" id="toLogin">Already have an account? Login</p>
-              
             </form>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="login.js"></script>
+</body>
+</html>
 
 
 
