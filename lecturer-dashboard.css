@@ -1,0 +1,71 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #fff8dc, #ffe4b5);
+  padding: 20px;
+}
+
+header h1 {
+  color: #f57c00;
+  text-align: center;
+}
+
+header p {
+  text-align: center;
+  font-size: 1.1em;
+  margin-bottom: 20px;
+}
+
+section {
+  margin-top: 30px;
+  padding: 20px;
+  border: 2px solid #f57c00;
+  border-radius: 15px;
+  background-color: #ffffffcc;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+input, select, button {
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #f57c00;
+}
+
+button {
+  background-color: #f57c00;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #e65c00;
+}
+
+.qr-code img {
+  width: 180px;
+  height: 180px;
+  display: block;
+  margin: 15px auto;
+  border: 2px solid #f57c00;
+  border-radius: 12px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+table, th, td {
+  border: 1px solid #f57c00;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+}
+
+.status-present { color: green; font-weight: bold; }
+.status-late { color: orange; font-weight: bold; }
+.status-absent { color: red; font-weight: bold; }
+
