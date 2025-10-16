@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Dashboard</title>
+  <link rel="stylesheet" href="teacher-dashboard.css">
+</head>
+<body>
+  <header>
+    <h1>Teacher Dashboard</h1>
+    <p>Welcome, [Teacher Name]</p>
+  </header>
+
+  <main>
+    <!-- Add Class Section -->
+    <section class="add-class-section">
+      <h2>Add New Class</h2>
+      <input type="text" id="class-name" placeholder="Class Name">
+      <button id="add-class">Add Class</button>
+      <p id="add-class-msg"></p>
+    </section>
+
+    <!-- Class List and QR Code -->
+    <section class="qr-section">
+      <h2>Manage Classes & Generate QR Code</h2>
+      <select id="class-select">
+        <option value="">Select Class</option>
+      </select>
+      <button id="generate-qr">Generate Daily QR Code</button>
+      <div class="qr-code">
+        <img src="qr_placeholder.png" alt="Daily QR Code" id="daily-qr">
+      </div>
+    </section>
+
+    <!-- Attendance Table -->
+    <section class="attendance-section">
+      <h2>Attendance Overview</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Student Name</th>
+            <th>Status</th>
+            <th>Time Scanned</th>
+            <th>Percentage</th>
+          </tr>
+        </thead>
+        <tbody id="attendance-list">
+          <!-- Dynamically populated -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="teacher-dashboard.js"></script>
+</body>
+</html>
+
+
