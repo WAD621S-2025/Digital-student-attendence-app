@@ -15,13 +15,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     const date = now.toLocaleDateString();
 
-    // Example: class start is 08:00
     const classStart = new Date();
     classStart.setHours(8,0,0);
 
     let status = now > classStart ? "Late" : "Present";
 
-    // Save record
+ 
     const record = {date, time, status, className:"Demo Class", name:`${firstName} ${lastName}`};
     records.push(record);
 
@@ -62,4 +61,5 @@ document.addEventListener("DOMContentLoaded", () => {
 function logout() {
   window.location.href = "index.html";
 }
+
 
