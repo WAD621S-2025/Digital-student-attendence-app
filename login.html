@@ -57,7 +57,79 @@
     </div>
   </div>
 
-  <script src="login.js"></script>
+ <script src="login.js"></script>
+  
+  <script>
+    
+    window.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const errorParam = urlParams.get('error');
+      const successParam = urlParams.get('success');
+      
+      console.log('Checking for messages...'); 
+      console.log('Error parameter:', errorParam); 
+      console.log('Success parameter:', successParam); 
+      
+      if (errorParam === 'invalid') {
+        const loginError = document.getElementById('loginError');
+        if (loginError) {
+          loginError.textContent = 'Invalid email or password. Please try again.';
+          loginError.style.display = 'block';
+          console.log('Login error message displayed!');
+        }
+      }
+      
+      if (errorParam === 'email_exists') {
+        const signupError = document.getElementById('signupError');
+        if (signupError) {
+          signupError.textContent = 'This email is already registered. Please login instead.';
+          signupError.style.display = 'block';
+          console.log('Signup error message displayed!');
+          
+          document.getElementById('card').style.transform = 'rotateY(180deg)';
+        }
+      }
+      
+      if (errorParam === 'number_exists') {
+        const signupError = document.getElementById('signupError');
+        if (signupError) {
+          signupError.textContent = 'This student/lecturer number is already registered.';
+          signupError.style.display = 'block';
+          console.log('Signup error message displayed!');
+          
+          document.getElementById('card').style.transform = 'rotateY(180deg)';
+        }
+      }
+      
+      if (errorParam === 'signup_failed') {
+        const signupError = document.getElementById('signupError');
+        if (signupError) {
+          signupError.textContent = 'Registration failed. Please try again.';
+          signupError.style.display = 'block';
+          console.log('Signup error message displayed!');
+          
+          document.getElementById('card').style.transform = 'rotateY(180deg)';
+        }
+      }
+      
+      if (successParam === 'registered') {
+        const signupSuccess = document.getElementById('signupSuccess');
+        if (signupSuccess) {
+          signupSuccess.textContent = 'Registration successful! Please login with your credentials.';
+          signupSuccess.style.display = 'block';
+          console.log('Signup success message displayed!');
+         
+        }
+      }
+      
+      if (errorParam || successParam) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    });
+  </script>
+
+</body>
+  
 </body>
 </html>
 

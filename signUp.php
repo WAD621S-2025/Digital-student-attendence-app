@@ -1,29 +1,54 @@
 <?php
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 include 'db_connect.php';
 
-$email = $_POST['signupEmail'];
-$password = $_POST['signupPassword'];
-$role = $_POST['signupRole'];
-$student_number =$_POST['number'];
+
+$role = $_POST['signupRole'] ?? '';
+$number = $_POST['number'] ?? '';
+$email = $_POST['signupEmail'] ?? '';
+$password = $_POST['signupPassword'] ?? '';
 
 
-$checkUserQuery = "SELECT * FROM users WHERE email='$email' AND role='$role'";
-$result = $connection->query($checkUserQuery);
+if (empty($role) || empty($number) || empty($email) || empty($password)) {
+    header("Location: login.html?error=signup_failed");
+    exit();
+}
 
 
-    if ($result->num_rows > 0) {
-    echo "<script>alert('User already exists!'); window.location.href='login.html';</script>";
-    } else {
-    
-    $insertQuery = "INSERT INTO users (id, email, password, role ) VALUES ('$student_number', '$email', '$password', '$role')";
-    if ($connection->query($insertQuery) === TRUE) {
+$role = $connection->real_escape_string($role);
+$number = $connection->real_escape_string($number);
+$email = $connection->real_escape_string($email);
+$password = $connection->real_escape_string($password);
 
-        echo "<script>alert('Sign up successful! You can now log in.'); window.location.href='login.html';</script>";
-    } else {
-        echo "<script>alert('An error occured!'); window.location.href='login.html';</script>";
-    }
 
-    }
-   $connection->close();
+$checkEmailQuery = "SELECT * FROM users WHERE email='$email'";
+$emailResult = $connection->query($checkEmailQuery);
 
+if ($emailResult->num_rows > 0) {
+    header("Location: login.html?error=email_exists");
+    exit();
+}
+
+$checkNumberQuery = "SELECT * FROM users WHERE id='$number'";
+$numberResult = $connection->query($checkNumberQuery);
+
+if ($numberResult->num_rows > 0) {
+    header("Location: login.html?error=number_exists");
+    exit();
+}
+
+$insertQuery = "INSERT INTO users (role, id, email, password) VALUES ('$role', '$number', '$email', '$password')";
+
+if ($connection->query($insertQuery) === TRUE) {
+   
+    header("Location: login.html?success=registered");
+    exit();
+} else {
+   
+    header("Location: login.html?error=signup_failed");
+    exit();
+}
 ?>
