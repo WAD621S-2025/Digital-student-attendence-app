@@ -24,7 +24,7 @@
         <div class="stats-grid">
           <div class="stat-box">
             <h3 id="totalClasses">0</h3>
-            <p>TOTAL CLASSES</p>
+            <p>TOTAL Modules</p>
           </div>
           <div class="stat-box">
             <h3 id="totalStudents">0</h3>
@@ -32,7 +32,7 @@
           </div>
           <div class="stat-box">
             <h3 id="todayClasses">0</h3>
-            <p>TODAY'S CLASSES</p>
+            <p>TODAY'S Modules</p>
           </div>
           <div class="stat-box">
             <h3 id="activeQRs">0</h3>
@@ -43,10 +43,10 @@
 
       
       <div class="card">
-        <h2>➕ Add New Class</h2>
+        <h2>➕ Add New Module</h2>
         <form class="add-class-form" id="addClassForm">
-          <input type="text" id="className" placeholder="Class Name" required>
-          <input type="text" id="classCode" placeholder="Class Code (e.g., CS101)" required>
+          <input type="text" id="className" placeholder="Module Name" required>
+          <input type="text" id="classCode" placeholder="Module Code (e.g., CS101)" required>
           <select id="classDay" required>
             <option value="" disabled selected>Select Day</option>
             <option value="Monday">Monday</option>
@@ -64,7 +64,7 @@
             <input type="number" id="gracePeriod" value="15" min="0" max="60" required>
             <label>minutes</label>
           </div>
-          <textarea id="classDescription" placeholder="Class Description (optional)" rows="3"></textarea>
+          <textarea id="classDescription" placeholder="module Description (optional)" rows="3"></textarea>
           <button type="submit">Add Class</button>
         </form>
         <div id="addClassMessage" class="message"></div>
@@ -72,9 +72,9 @@
 
   
       <div class="card">
-        <h2>📚 My Classes</h2>
+        <h2>📚 My Modules</h2>
         <div class="class-list" id="classList">
-          <p style="text-align:center;color:#999;padding:20px;">No classes added yet</p>
+          <p style="text-align:center;color:#999;padding:20px;">No modules added yet</p>
         </div>
       </div>
     </div>
@@ -104,7 +104,7 @@
       <span class="close-modal" onclick="closeAttendanceModal()">&times;</span>
       <h2 style="color:#3718c2;margin-bottom:20px;">📋 Attendance Records</h2>
       <div class="qr-info">
-        <p><strong>Class:</strong> <span id="attClassName"></span></p>
+        <p><strong>Module:</strong> <span id="attClassName"></span></p>
         <p><strong>Date:</strong> <span id="attDate"></span></p>
         <p><strong>Total Present:</strong> <span id="attTotal">0</span></p>
         <p><strong>On Time:</strong> <span id="attOnTime">0</span> | <strong>Late:</strong> <span id="attLate">0</span></p>
