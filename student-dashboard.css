@@ -82,13 +82,14 @@ body::before {
 }
 
 .dashboard-grid {
-  display: grid;
+  display: flow;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
   margin-bottom: 20px;
 }
 
 .card {
+  margin: 10px;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 20px;
   padding: 25px;
