@@ -18,7 +18,7 @@ toLogin.addEventListener('click', () => {
 const users = {};
 
 
-signupForm.addEventListener('submit', (e) => {
+/*signupForm.addEventListener('submit', (e) => {
   e.preventDefault();
   
   const role = document.getElementById('signupRole').value;
@@ -99,7 +99,7 @@ loginForm.addEventListener('submit', (e) => {
     window.location.href = 'student-dashboard.html';
   }
 });
-
+*/
 
 forgotLink.addEventListener('click', () => {
   alert('Password reset functionality would be implemented here. For demo purposes, please contact admin.');
