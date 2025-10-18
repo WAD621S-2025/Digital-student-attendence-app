@@ -16,14 +16,14 @@
             <img src="https://i.pinimg.com/736x/f9/52/c1/f952c1fb0948072af6e3cd3dedf38249.jpg" 
                  alt="Presently Logo" class="logo">
             <h2>Login</h2>
-            <form id="loginForm">
-              <select id="loginRole" required>
+            <form id="loginForm" action="login.php" method="POST">
+              <select id="loginRole" name="loginRole" required>
                 <option value="" disabled selected>Select Role</option>
                 <option value="lecturer">Lecturer</option>
                 <option value="student">Student</option>
               </select>
-              <input type="email" id="loginEmail" placeholder="Email" required>
-              <input type="password" id="loginPassword" placeholder="Password" required>
+              <input type="email" id="loginEmail" name="loginEmail" placeholder="Email" required>
+              <input type="password" id="loginPassword" name="loginPassword" placeholder="Password" required>
               <div class="error-message" id="loginError"></div>
               <button type="submit">Login</button>
               <p class="link" id="forgotLink">Forgot Password?</p>
@@ -37,16 +37,16 @@
             <img src="https://i.pinimg.com/736x/f9/52/c1/f952c1fb0948072af6e3cd3dedf38249.jpg" 
                  alt="Presently Logo" class="logo">
             <h2>Sign Up</h2>
-            <form id="signupForm">
-              <select id="signupRole" required>
+            <form id="signupForm" action="signUp.php" method="post">
+              <select id="signupRole" name="signupRole" required>
                 <option value="" disabled selected>Select Role</option>
                 <option value="lecturer">Lecturer</option>
                 <option value="student">Student</option>
               </select>
-              <input type ="identification" id="number" placeholder="student number or lecturer card number"required>
-              <input type="text" id="signupName" placeholder="Full Name" required>
-              <input type="email" id="signupEmail" placeholder="Email" required>
-              <input type="password" id="signupPassword" placeholder="Password" required>
+              <input type ="identification" id="number" name="number" placeholder="student number or lecturer card number"required>
+              <input type="text" id="signupName" name="signupName" placeholder="Full Name" required>
+              <input type="email" id="signupEmail" name="signupEmail" placeholder="Email" required>
+              <input type="password" id="signupPassword" name="signupPassword" placeholder="Password" required>
               <div class="error-message" id="signupError"></div>
               <div class="success-message" id="signupSuccess"></div>
               <button type="submit">Sign Up</button>
