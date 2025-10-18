@@ -10,10 +10,11 @@ document.addEventListener('DOMContentLoaded', function() {
   
 
   document.getElementById('addClassForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+   
     addClass();
   });
 });
+
 
 function loadData() {
  
@@ -64,7 +65,6 @@ function addClass() {
 
 
   document.getElementById('addClassForm').reset();
-
 
   setTimeout(() => {
     messageDiv.style.display = 'none';
