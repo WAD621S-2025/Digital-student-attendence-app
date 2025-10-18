@@ -1,60 +1,78 @@
+
 let classes = [];
+let attendanceRecords = [];
 let currentQRCode = null;
-let currentClass = null;
 
-function init() {
-  loadClasses();
+document.addEventListener('DOMContentLoaded', function() {
+  loadData();
   updateStats();
-}
+  displayClasses();
+  
 
-function loadClasses() {
-  const savedClasses = localStorage.getItem('lecturerClasses');
-  if (savedClasses) {
-    classes = JSON.parse(savedClasses);
+  document.getElementById('addClassForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    addClass();
+  });
+});
+
+function loadData() {
+ 
+  if (!classes.length) {
+    classes = [];
   }
-  renderClasses();
+  if (!attendanceRecords.length) {
+    attendanceRecords = [];
+  }
+}
+
+
+function saveData() {
+
   updateStats();
+  displayClasses();
 }
 
 
-function saveClasses() {
-  localStorage.setItem('lecturerClasses', JSON.stringify(classes));
-}
-
-
-document.getElementById('addClassForm').addEventListener('submit', function(e) {
-  e.preventDefault();
+function addClass() {
+  const className = document.getElementById('className').value;
+  const classCode = document.getElementById('classCode').value;
+  const classDay = document.getElementById('classDay').value;
+  const classTime = document.getElementById('classTime').value;
+  const classVenue = document.getElementById('classVenue').value;
+  const gracePeriod = document.getElementById('gracePeriod').value;
+  const classDescription = document.getElementById('classDescription').value;
 
   const newClass = {
     id: Date.now(),
-    name: document.getElementById('className').value,
-    code: document.getElementById('classCode').value,
-    day: document.getElementById('classDay').value,
-    time: document.getElementById('classTime').value,
-    venue: document.getElementById('classVenue').value,
-    description: document.getElementById('classDescription').value,
-    createdAt: new Date().toISOString(),
-    students: []
+    name: className,
+    code: classCode,
+    day: classDay,
+    time: classTime,
+    venue: classVenue,
+    gracePeriod: parseInt(gracePeriod),
+    description: classDescription,
+    createdAt: new Date().toISOString()
   };
 
   classes.push(newClass);
-  saveClasses();
-  renderClasses();
-  updateStats();
+  saveData();
 
- 
-  const message = document.getElementById('addClassMessage');
-  message.textContent = 'Class added successfully!';
-  message.className = 'message success';
+  const messageDiv = document.getElementById('addClassMessage');
+  messageDiv.textContent = 'Class added successfully!';
+  messageDiv.style.color = '#28a745';
+  messageDiv.style.display = 'block';
+
+
+  document.getElementById('addClassForm').reset();
+
+
   setTimeout(() => {
-    message.style.display = 'none';
+    messageDiv.style.display = 'none';
   }, 3000);
+}
 
-  
-  this.reset();
-});
 
-function renderClasses() {
+function displayClasses() {
   const classList = document.getElementById('classList');
   
   if (classes.length === 0) {
@@ -62,108 +80,225 @@ function renderClasses() {
     return;
   }
 
-  classList.innerHTML = classes.map(classItem => `
-    <div class="class-item">
-      <div class="class-info">
-        <h3>${classItem.name}</h3>
-        <p>📝 Code: ${classItem.code}</p>
-        <p>📅 ${classItem.day} at ${classItem.time}</p>
-        <p>📍 ${classItem.venue}</p>
-        ${classItem.description ? `<p style="font-size:12px;margin-top:5px;">${classItem.description}</p>` : ''}
+  classList.innerHTML = classes.map(cls => `
+    <div class="class-card">
+      <div class="class-header">
+        <h3>${cls.name}</h3>
+        <span class="class-code">${cls.code}</span>
+      </div>
+      <div class="class-details">
+        <p><strong>📅 Day:</strong> ${cls.day}</p>
+        <p><strong>🕐 Time:</strong> ${cls.time}</p>
+        <p><strong>📍 Venue:</strong> ${cls.venue}</p>
+        <p><strong>⏱️ Grace Period:</strong> ${cls.gracePeriod} minutes</p>
+        ${cls.description ? `<p><strong>Description:</strong> ${cls.description}</p>` : ''}
       </div>
       <div class="class-actions">
-        <button class="btn btn-qr" onclick="generateQR(${classItem.id})">Generate QR</button>
-        <button class="btn btn-delete" onclick="deleteClass(${classItem.id})">Delete</button>
+        <button onclick="generateQR(${cls.id})" class="btn-primary">Generate QR Code</button>
+        <button onclick="viewAttendance(${cls.id})" class="btn-secondary">View Attendance</button>
+        <button onclick="deleteClass(${cls.id})" class="btn-danger">Delete</button>
       </div>
     </div>
   `).join('');
 }
 
-
 function generateQR(classId) {
-  currentClass = classes.find(c => c.id === classId);
-  if (!currentClass) return;
+  const cls = classes.find(c => c.id === classId);
+  if (!cls) return;
 
-  
+  const sessionId = Date.now();
+  const sessionData = {
+    sessionId: sessionId,
+    classId: classId,
+    className: cls.name,
+    classCode: cls.code,
+    time: cls.time,
+    gracePeriod: cls.gracePeriod,
+    startTime: new Date().toISOString(),
+    date: new Date().toLocaleDateString()
+  };
+
+
+  if (!window.activeSessions) {
+    window.activeSessions = [];
+  }
+  window.activeSessions.push(sessionData);
+
+ 
+  const baseURL = window.location.origin + window.location.pathname.replace('lecturer-dashboard.html', 'student-dashboard.html');
+  const qrURL = `${baseURL}?session=${sessionId}&class=${classId}&code=${cls.code}`;
+
+
+  document.getElementById('qrModal').style.display = 'flex';
+  document.getElementById('qrClassName').textContent = cls.name;
+  document.getElementById('qrClassCode').textContent = cls.code;
+  document.getElementById('qrDate').textContent = new Date().toLocaleDateString();
+  document.getElementById('qrTime').textContent = new Date().toLocaleTimeString();
+  document.getElementById('qrGracePeriod').textContent = cls.gracePeriod;
+
+
   document.getElementById('qrcode').innerHTML = '';
 
-  const baseURL = window.location.origin;
-  const loginURL = `${baseURL}/login.html?class=${currentClass.code}&session=${Date.now()}`;
-
   currentQRCode = new QRCode(document.getElementById('qrcode'), {
-    text: loginURL,
+    text: qrURL,
     width: 256,
     height: 256,
-    colorDark: '#3718c2',
-    colorLight: '#ffffff',
+    colorDark: "#3718c2",
+    colorLight: "#ffffff",
     correctLevel: QRCode.CorrectLevel.H
   });
 
-  document.getElementById('qrClassName').textContent = currentClass.name;
-  document.getElementById('qrClassCode').textContent = currentClass.code;
-  document.getElementById('qrDate').textContent = new Date().toLocaleDateString();
-  document.getElementById('qrTime').textContent = new Date().toLocaleTimeString();
-
-  
-  document.getElementById('qrModal').classList.add('active');
+  updateStats();
 }
 
 
 function closeQRModal() {
-  document.getElementById('qrModal').classList.remove('active');
+  document.getElementById('qrModal').style.display = 'none';
 }
 
 
 function downloadQR() {
-  const canvas = document.querySelector('#qrcode canvas');
-  if (!canvas) return;
-
-  const link = document.createElement('a');
-  link.download = `QR_${currentClass.code}_${new Date().toISOString().split('T')[0]}.png`;
-  link.href = canvas.toDataURL();
-  link.click();
+  const qrCanvas = document.querySelector('#qrcode canvas');
+  if (qrCanvas) {
+    const url = qrCanvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.download = `attendance-qr-${Date.now()}.png`;
+    link.href = url;
+    link.click();
+  }
 }
 
+function viewAttendance(classId) {
+  const cls = classes.find(c => c.id === classId);
+  if (!cls) return;
+
+
+  const classAttendance = attendanceRecords.filter(record => record.classId === classId);
+
+
+  document.getElementById('attendanceModal').style.display = 'flex';
+  document.getElementById('attClassName').textContent = cls.name;
+  document.getElementById('attDate').textContent = new Date().toLocaleDateString();
+  document.getElementById('attTotal').textContent = classAttendance.length;
+
+  const onTime = classAttendance.filter(r => r.status === 'Present').length;
+  const late = classAttendance.filter(r => r.status === 'Late').length;
+
+  document.getElementById('attOnTime').textContent = onTime;
+  document.getElementById('attLate').textContent = late;
+
+  const attendanceList = document.getElementById('attendanceList');
+  
+  if (classAttendance.length === 0) {
+    attendanceList.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">No attendance records yet</p>';
+    return;
+  }
+
+  attendanceList.innerHTML = classAttendance.map(record => `
+    <div class="attendance-record">
+      <div class="student-info">
+        <strong>${record.firstName} ${record.lastName}</strong>
+        <span>${record.studentNumber}</span>
+      </div>
+      <div class="attendance-status ${record.status.toLowerCase()}">
+        ${record.status}
+      </div>
+      <div class="attendance-time">
+        ${new Date(record.timestamp).toLocaleTimeString()}
+      </div>
+    </div>
+  `).join('');
+}
+
+function closeAttendanceModal() {
+  document.getElementById('attendanceModal').style.display = 'none';
+}
 
 function deleteClass(classId) {
-  if (!confirm('Are you sure you want to delete this class?')) return;
-
-  classes = classes.filter(c => c.id !== classId);
-  saveClasses();
-  renderClasses();
-  updateStats();
+  if (confirm('Are you sure you want to delete this class?')) {
+    classes = classes.filter(c => c.id !== classId);
+    attendanceRecords = attendanceRecords.filter(r => r.classId !== classId);
+    saveData();
+  }
 }
 
 
 function updateStats() {
   document.getElementById('totalClasses').textContent = classes.length;
   
-  const totalStudents = classes.reduce((sum, c) => sum + (c.students?.length || 0), 0);
-  document.getElementById('totalStudents').textContent = totalStudents;
+  const uniqueStudents = new Set(attendanceRecords.map(r => r.studentNumber));
+  document.getElementById('totalStudents').textContent = uniqueStudents.size;
+
 
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
   const todayClasses = classes.filter(c => c.day === today).length;
   document.getElementById('todayClasses').textContent = todayClasses;
 
-  document.getElementById('activeQRs').textContent = classes.length;
+  const activeQRs = window.activeSessions ? window.activeSessions.filter(session => {
+    const sessionTime = new Date(session.startTime);
+    const now = new Date();
+    const diffHours = (now - sessionTime) / (1000 * 60 * 60);
+    return diffHours < 2;
+  }).length : 0;
+  
+  document.getElementById('activeQRs').textContent = activeQRs;
 }
-
 
 function logout() {
   if (confirm('Are you sure you want to logout?')) {
-    window.location.href = 'login.html';
+    window.location.href = 'index.html';
   }
 }
 
 window.onclick = function(event) {
-  const modal = document.getElementById('qrModal');
-  if (event.target === modal) {
+  const qrModal = document.getElementById('qrModal');
+  const attModal = document.getElementById('attendanceModal');
+  
+  if (event.target === qrModal) {
     closeQRModal();
+  }
+  if (event.target === attModal) {
+    closeAttendanceModal();
   }
 }
 
+window.recordAttendance = function(sessionId, studentData) {
+  const session = window.activeSessions ? window.activeSessions.find(s => s.sessionId === parseInt(sessionId)) : null;
+  
+  if (!session) {
+    return { success: false, message: 'Invalid or expired session' };
+  }
+  const alreadySignedIn = attendanceRecords.find(
+    r => r.sessionId === sessionId && r.studentNumber === studentData.studentNumber
+  );
 
-window.addEventListener('DOMContentLoaded', init);
+  if (alreadySignedIn) {
+    return { success: false, message: 'You have already signed in for this class' };
+  }
+  const sessionStartTime = new Date(session.startTime);
+  const currentTime = new Date();
+  const minutesLate = (currentTime - sessionStartTime) / (1000 * 60);
+  const status = minutesLate <= session.gracePeriod ? 'Present' : 'Late';
+  const attendanceRecord = {
+    sessionId: sessionId,
+    classId: session.classId,
+    className: session.className,
+    classCode: session.classCode,
+    studentNumber: studentData.studentNumber,
+    firstName: studentData.firstName,
+    lastName: studentData.lastName,
+    timestamp: new Date().toISOString(),
+    status: status,
+    minutesLate: Math.round(minutesLate)
+  };
 
+  attendanceRecords.push(attendanceRecord);
+  saveData();
 
-
+  return { 
+    success: true, 
+    message: `Attendance recorded successfully! Status: ${status}`,
+    status: status,
+    record: attendanceRecord
+  };
+};
