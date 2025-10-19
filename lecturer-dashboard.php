@@ -17,7 +17,7 @@ if (empty($moduleName) || empty($moduleCode) || empty($time) || empty($venue) ||
 
 $insertQuery = "INSERT INTO modules (module_code, module_name, venue, start_time, grace_period) VALUES ('$moduleCode', '$moduleName', '$venue', '$time', '$gracePeriod')";
 
-// Execute query
+
 if ($connection->query($insertQuery) === TRUE) {
     echo "success";
 } else {
