@@ -1,13 +1,25 @@
-# Presently – Digital Attendance Register  
-- A simple is digital attendance system* built with *PHP, MySQL, HTML, and CSS
-- It replaces paper registers by allowing students to sign in online while lecturers can view, filter, and export attendance records.  
+#Presently – Digital Attendance Register
 
- ## Features  
- - Student Sign-In – students enter their number and name to record attendance through QR codes
-- Late Detection – system automatically checks if a student is late based on class start time and grace period.  
-- Secure Login– lecturers and admins log in with hashed passwords.  
-- Class Management– create and manage classes with schedules.  
-- Attendance Records – view all attendance, filter by date/class.
-- Generate QR- lecturers are able to generate daily QR codes
-- Set time - lecturers are able to set timer for attendance
-- Tracking of students- checks the attendance rate of students and also absentees
+A modern web-based attendance management system that replaces traditional paper registers with a digital solution. Built with PHP, MySQL, HTML, CSS, and JavaScript, Presently streamlines attendance tracking for educational institutions through QR code technology.
+
+
+ #Features
+
+For Students
+- QR Code Sign-In – Quick attendance marking by scanning class-specific QR codes
+- Simple Registration– Enter student number and name to record attendance
+- Real-time Status – Instant confirmation of attendance submission
+- *Attendance History* – View personal attendance records
+
+ For Lecturers
+- QR Code Generation – Generate unique daily QR codes for each class
+- Time Management – Set class start times and grace periods
+- Late Detection – Automatic identification of late arrivals based on configurable grace periods
+- Class Management – Create, edit, and manage multiple classes with schedules
+- Attendance Records – View comprehensive attendance data with filtering options
+- Student Tracking– Monitor individual student attendance rates and identify chronic absentees
+- Export Functionality – Download QR codes
+
+ Security
+- Secure Authentication – Password hashing for all user accounts
+- Role-Based Access – Separate dashboards for students and lecturers
