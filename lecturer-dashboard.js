@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
 
   document.getElementById('addClassForm').addEventListener('submit', function(e) {
-   
+   e.preventDefault();
     addClass();
   });
 });
@@ -35,42 +35,54 @@ function saveData() {
 
 
 function addClass() {
-  const className = document.getElementById('className').value;
-  const classCode = document.getElementById('classCode').value;
-  const classDay = document.getElementById('classDay').value;
-  const classTime = document.getElementById('classTime').value;
-  const classVenue = document.getElementById('classVenue').value;
-  const gracePeriod = document.getElementById('gracePeriod').value;
-  const classDescription = document.getElementById('classDescription').value;
+  const formData = new FormData();
+  formData.append('className', document.getElementById('className').value);
+  formData.append('classCode', document.getElementById('classCode').value);
+  formData.append('classTime', document.getElementById('classTime').value);
+  formData.append('classVenue', document.getElementById('classVenue').value);
+  formData.append('gracePeriod', document.getElementById('gracePeriod').value);
 
-  const newClass = {
-    id: Date.now(),
-    name: className,
-    code: classCode,
-    day: classDay,
-    time: classTime,
-    venue: classVenue,
-    gracePeriod: parseInt(gracePeriod),
-    description: classDescription,
-    createdAt: new Date().toISOString()
-  };
-
-  classes.push(newClass);
-  saveData();
-
-  const messageDiv = document.getElementById('addClassMessage');
-  messageDiv.textContent = 'Class added successfully!';
-  messageDiv.style.color = '#28a745';
-  messageDiv.style.display = 'block';
-
-
-  document.getElementById('addClassForm').reset();
-
-  setTimeout(() => {
-    messageDiv.style.display = 'none';
-  }, 3000);
+  fetch('lecturer-dashboard.php', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json()) 
+  .then(data => {
+    if (data.success) {
+      const newClass = {
+        id: data.id,
+        name: document.getElementById('className').value,
+        code: document.getElementById('classCode').value,
+        day: document.getElementById('classDay').value,
+        time: document.getElementById('classTime').value,
+        venue: document.getElementById('classVenue').value,
+        gracePeriod: parseInt(document.getElementById('gracePeriod').value),
+        description: document.getElementById('classDescription').value,
+        createdAt: new Date().toISOString()
+      };
+      
+      classes.push(newClass);
+      saveData();
+      
+      const messageDiv = document.getElementById('addClassMessage');
+      messageDiv.textContent = 'Class added successfully!';
+      messageDiv.style.color = '#28a745';
+      messageDiv.style.display = 'block';
+      
+      document.getElementById('addClassForm').reset();
+      
+      setTimeout(() => {
+        messageDiv.style.display = 'none';
+      }, 3000);
+    } else {
+      alert('Error: ' + data.message);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Failed to add class');
+  });
 }
-
 
 function displayClasses() {
   const classList = document.getElementById('classList');
@@ -118,24 +130,15 @@ function generateQR(classId) {
     date: new Date().toLocaleDateString()
   };
 
-
   if (!window.activeSessions) {
     window.activeSessions = [];
   }
   window.activeSessions.push(sessionData);
 
- 
-  const baseURL = window.location.origin + window.location.pathname.replace('lecturer-dashboard.html', 'student-dashboard.html');
-  const qrURL = `${baseURL}?session=${sessionId}&class=${classId}&code=${cls.code}`;
-
+  const baseURL = window.location.origin + window.location.pathname.replace('lecturer-dashboard.html', '');
+  const qrURL = `${baseURL}student-dashboard.html?session=${sessionId}&class=${classId}&code=${cls.code}`;
 
   document.getElementById('qrModal').style.display = 'flex';
-  document.getElementById('qrClassName').textContent = cls.name;
-  document.getElementById('qrClassCode').textContent = cls.code;
-  document.getElementById('qrDate').textContent = new Date().toLocaleDateString();
-  document.getElementById('qrTime').textContent = new Date().toLocaleTimeString();
-  document.getElementById('qrGracePeriod').textContent = cls.gracePeriod;
-
 
   document.getElementById('qrcode').innerHTML = '';
 
@@ -168,46 +171,62 @@ function downloadQR() {
   }
 }
 
-function viewAttendance(classId) {
+async function viewAttendance(classId) {
   const cls = classes.find(c => c.id === classId);
   if (!cls) return;
-
-
-  const classAttendance = attendanceRecords.filter(record => record.classId === classId);
-
 
   document.getElementById('attendanceModal').style.display = 'flex';
   document.getElementById('attClassName').textContent = cls.name;
   document.getElementById('attDate').textContent = new Date().toLocaleDateString();
-  document.getElementById('attTotal').textContent = classAttendance.length;
+  document.getElementById('attendanceList').innerHTML = '<p style="text-align:center;color:#999;padding:20px;">Loading attendance...</p>';
 
-  const onTime = classAttendance.filter(r => r.status === 'Present').length;
-  const late = classAttendance.filter(r => r.status === 'Late').length;
+  try {
+    
+    const response = await fetch(`student-dashboard.php?classId=${classId}`);
+    const data = await response.json();
 
-  document.getElementById('attOnTime').textContent = onTime;
-  document.getElementById('attLate').textContent = late;
+    if (data.success) {
+      const classAttendance = data.attendance;
 
-  const attendanceList = document.getElementById('attendanceList');
-  
-  if (classAttendance.length === 0) {
-    attendanceList.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">No attendance records yet</p>';
-    return;
+      document.getElementById('attTotal').textContent = classAttendance.length;
+
+      const onTime = classAttendance.filter(r => r.status === 'Present').length;
+      const late = classAttendance.filter(r => r.status === 'Late').length;
+
+      document.getElementById('attOnTime').textContent = onTime;
+      document.getElementById('attLate').textContent = late;
+
+      const attendanceList = document.getElementById('attendanceList');
+      
+      if (classAttendance.length === 0) {
+        attendanceList.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">No attendance records yet</p>';
+        return;
+      }
+
+      attendanceList.innerHTML = classAttendance.map(record => `
+        <div class="attendance-record">
+          <div class="student-info">
+            <strong>${record.firstName} ${record.lastName}</strong>
+            <span>${record.studentNumber}</span>
+          </div>
+          <div class="attendance-status ${record.status.toLowerCase()}">
+            ${record.status}
+          </div>
+          <div class="attendance-time">
+            ${new Date(record.timestamp).toLocaleTimeString()}
+          </div>
+        </div>
+      `).join('');
+
+      attendanceRecords = classAttendance;
+      updateStats();
+    } else {
+      document.getElementById('attendanceList').innerHTML = `<p style="text-align:center;color:#dc3545;padding:20px;">${data.message}</p>`;
+    }
+  } catch (error) {
+    console.error('Error fetching attendance:', error);
+    document.getElementById('attendanceList').innerHTML = '<p style="text-align:center;color:#dc3545;padding:20px;">Failed to load attendance. Error: ' + error.message + '</p>';
   }
-
-  attendanceList.innerHTML = classAttendance.map(record => `
-    <div class="attendance-record">
-      <div class="student-info">
-        <strong>${record.firstName} ${record.lastName}</strong>
-        <span>${record.studentNumber}</span>
-      </div>
-      <div class="attendance-status ${record.status.toLowerCase()}">
-        ${record.status}
-      </div>
-      <div class="attendance-time">
-        ${new Date(record.timestamp).toLocaleTimeString()}
-      </div>
-    </div>
-  `).join('');
 }
 
 function closeAttendanceModal() {

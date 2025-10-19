@@ -25,6 +25,8 @@ function checkQRCodeRedirect() {
   const classId = urlParams.get('class');
   const classCode = urlParams.get('code');
 
+  console.log('URL Parameters:', { sessionId, classId, classCode }); // Debug
+
   if (sessionId && classId) {
     currentSession = {
       sessionId: sessionId,
@@ -36,15 +38,15 @@ function checkQRCodeRedirect() {
     signInCard.style.border = '3px solid #3718c2';
     signInCard.style.animation = 'pulse 2s infinite';
 
-
     const messageDiv = document.getElementById('signInMessage');
     messageDiv.textContent = `✅ QR Code scanned! Please sign in for class ${classCode}`;
     messageDiv.style.color = '#3718c2';
     messageDiv.style.fontWeight = 'bold';
     messageDiv.style.display = 'block';
 
-
     document.getElementById('studentNumber').focus();
+  } else {
+    console.log('No QR code parameters found in URL');
   }
 }
 
@@ -72,7 +74,6 @@ async function signInAttendance() {
     lastName: lastName
   };
 
-  // Try to save to server first
   let result = null;
   try {
     const form = new FormData();
@@ -83,16 +84,16 @@ async function signInAttendance() {
     form.append('classId', currentSession.classId);
     form.append('classCode', currentSession.classCode);
 
-    const resp = await fetch('save_attendance.php', { method: 'POST', body: form });
+    const resp = await fetch('student-dashboard.php', { method: 'POST', body: form });
     const json = await resp.json();
     if (json && json.success) {
       result = { success: true, message: json.message, status: json.record.status, record: json.record };
     } else {
-      // server rejected or error, fall back to local
+      
       result = recordAttendanceLocally(currentSession.sessionId, studentData);
     }
   } catch (err) {
-    // network or other error - fall back to local recording
+    
     result = recordAttendanceLocally(currentSession.sessionId, studentData);
   }
 
@@ -100,7 +101,7 @@ async function signInAttendance() {
   if (result.success) {
     showMessage(result.message, 'success');
 
-    // attach first/last name and status if returned
+
     const rec = result.record || {
       sessionId: currentSession ? currentSession.sessionId : sessionId,
       classId: currentSession ? currentSession.classId : (result.record && result.record.classId),
@@ -112,7 +113,7 @@ async function signInAttendance() {
       status: result.status || 'Present'
     };
 
-    // Mark late entries with status === 'Late'
+    
     studentAttendanceHistory.push(rec);
     saveStudentData();
     updateAttendanceStats();
