@@ -18,8 +18,8 @@ toLogin.addEventListener('click', () => {
 const users = {};
 
 
-/*signupForm.addEventListener('submit', (e) => {
-  e.preventDefault();
+signupForm.addEventListener('submit', (e) => {
+  
   
   const role = document.getElementById('signupRole').value;
   const name = document.getElementById('signupName').value;
@@ -60,7 +60,7 @@ const users = {};
 
 
 loginForm.addEventListener('submit', (e) => {
-  e.preventDefault();
+  
   
   const role = document.getElementById('loginRole').value;
   const email = document.getElementById('loginEmail').value;
@@ -99,7 +99,7 @@ loginForm.addEventListener('submit', (e) => {
     window.location.href = 'student-dashboard.html';
   }
 });
-*/
+
 
 forgotLink.addEventListener('click', () => {
   alert('Password reset functionality would be implemented here. For demo purposes, please contact admin.');

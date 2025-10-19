@@ -29,11 +29,11 @@ if ($result->num_rows > 0) {
     if ($user['password'] === $password) {
         
         if($user['role'] === 'lecturer'){
-            header("Location: lecturer-dashboard.html");
+            echo "<script>window.location.href='lecturer-dashboard.html';</script>";
             exit();
         } 
         elseif($user['role'] === 'student'){
-            header("Location: student-dashboard.html");
+            echo "<script>window.location.href='student-dashboard.html';</script>";
             exit();
         }
     }
