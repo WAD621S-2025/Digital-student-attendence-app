@@ -19,7 +19,7 @@ if (empty($email) || empty($password)) {
 $email = $connection->real_escape_string($email);
 
 
-$checkUserQuery = "SELECT * FROM users WHERE email='$email'";
+$checkUserQuery = "SELECT * FROM users WHERE email='$email' ";
 $result = $connection->query($checkUserQuery);
 
 if ($result->num_rows > 0) {

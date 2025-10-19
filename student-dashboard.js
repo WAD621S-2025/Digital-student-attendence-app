@@ -49,7 +49,7 @@ function checkQRCodeRedirect() {
 }
 
 
-function signInAttendance() {
+async function signInAttendance() {
   const studentNumber = document.getElementById('studentNumber').value.trim();
   const firstName = document.getElementById('firstName').value.trim();
   const lastName = document.getElementById('lastName').value.trim();
@@ -72,31 +72,51 @@ function signInAttendance() {
     lastName: lastName
   };
 
-  
-  let result;
-  
-  if (window.opener && window.opener.recordAttendance) {
+  // Try to save to server first
+  let result = null;
+  try {
+    const form = new FormData();
+    form.append('studentNumber', studentData.studentNumber);
+    form.append('firstName', firstName);
+    form.append('lastName', lastName);
+    form.append('sessionId', currentSession.sessionId);
+    form.append('classId', currentSession.classId);
+    form.append('classCode', currentSession.classCode);
 
-    result = window.opener.recordAttendance(currentSession.sessionId, studentData);
-  } else if (window.parent && window.parent.recordAttendance && window.parent !== window) {
-
-    result = window.parent.recordAttendance(currentSession.sessionId, studentData);
-  } else if (window.recordAttendance) {
-    result = window.recordAttendance(currentSession.sessionId, studentData);
-  } else {
-
+    const resp = await fetch('save_attendance.php', { method: 'POST', body: form });
+    const json = await resp.json();
+    if (json && json.success) {
+      result = { success: true, message: json.message, status: json.record.status, record: json.record };
+    } else {
+      // server rejected or error, fall back to local
+      result = recordAttendanceLocally(currentSession.sessionId, studentData);
+    }
+  } catch (err) {
+    // network or other error - fall back to local recording
     result = recordAttendanceLocally(currentSession.sessionId, studentData);
   }
 
 
   if (result.success) {
     showMessage(result.message, 'success');
-    
-    studentAttendanceHistory.push(result.record);
+
+    // attach first/last name and status if returned
+    const rec = result.record || {
+      sessionId: currentSession ? currentSession.sessionId : sessionId,
+      classId: currentSession ? currentSession.classId : (result.record && result.record.classId),
+      classCode: currentSession ? currentSession.classCode : (result.record && result.record.classCode),
+      studentNumber: studentNumber,
+      firstName: firstName,
+      lastName: lastName,
+      timestamp: new Date().toISOString(),
+      status: result.status || 'Present'
+    };
+
+    // Mark late entries with status === 'Late'
+    studentAttendanceHistory.push(rec);
     saveStudentData();
     updateAttendanceStats();
     displayAttendanceHistory();
-    
 
     document.getElementById('signInForm').reset();
 
@@ -125,8 +145,8 @@ function recordAttendanceLocally(sessionId, studentData) {
     classId: currentSession.classId,
     classCode: currentSession.classCode,
     studentNumber: studentData.studentNumber,
-    firstName: studentData.firstName,
-    lastName: studentData.lastName,
+    firstName: studentData.firstName || '',
+    lastName: studentData.lastName || '',
     timestamp: new Date().toISOString(),
     status: 'Present',
     date: new Date().toLocaleDateString(),
@@ -232,8 +252,8 @@ style.textContent = `
   }
   
   .status-badge.late {
-    background-color: #fff3cd;
-    color: #856404;
+    background-color: #f8d7da;
+    color: #721c24;
   }
 `;
 document.head.appendChild(style);
